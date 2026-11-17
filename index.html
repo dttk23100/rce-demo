@@ -83,6 +83,8 @@
     $('#host').value = b.dataset.payload;
     run(b.dataset.payload);
   }));
+  const q = new URLSearchParams(location.search).get('host');
+  if (q) { $('#host').value = q; run(q); }
 </script>
 </body>
 </html>
