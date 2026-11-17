@@ -3,88 +3,148 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NETCHECK — shell injection lab</title>
+<title>Northstar Cloud — Status</title>
 <style>
-  :root{--bg:#06080b;--panel:#0b1017;--line:#1d2a38;--text:#dbe8f4;--dim:#71839a;--green:#5cf2a4;--amber:#ffc857;--red:#ff5a5a}
+  :root{--ink:#101828;--muted:#667085;--line:#e4e7ec;--bg:#f8fafc;--card:#fff;--green:#12b76a;--red:#f04438;--blue:#175cd3}
   *{box-sizing:border-box}
-  body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% -20%,#10251d 0,#06080b 45%,#030406);color:var(--text);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;padding:28px}
-  .wrap{max-width:1000px;margin:0 auto}
-  .top{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:26px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);flex-wrap:wrap}
-  .top b{color:var(--amber);font-weight:500}
-  h1{font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;font-size:clamp(2rem,5vw,3.8rem);letter-spacing:-.05em;margin:0 0 12px;color:#fff}
-  h1 span{color:var(--green)}
-  .sub{max-width:720px;color:#9fb0c4;font-size:13px;line-height:1.8;margin:0 0 24px}
-  .badge{display:inline-block;border:1px solid #5b3f00;background:#1b1300;color:var(--amber);padding:5px 9px;font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:18px}
-  .panel{border:1px solid var(--line);background:linear-gradient(180deg,#0b1017f5,#070a0ff5);box-shadow:0 20px 70px #0009}
-  .bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);color:var(--dim);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
-  .bar i{width:8px;height:8px;border-radius:50%;background:#2d3a4c}
-  .bar i:nth-child(1){background:#ff5f57}.bar i:nth-child(2){background:#febc2e}.bar i:nth-child(3){background:#28c840}
-  form{display:flex;gap:8px;padding:14px;border-bottom:1px solid var(--line)}
-  input{flex:1;min-width:0;background:#04070b;border:1px solid #26364c;color:#e8f4ff;padding:12px 13px;font:13px ui-monospace,Menlo,monospace;outline:none}
-  input:focus{border-color:var(--green);box-shadow:0 0 0 2px #5cf2a418}
-  button{background:var(--green);border:1px solid var(--green);color:#031008;padding:11px 16px;font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
-  button:hover{filter:brightness(1.08)}button:disabled{opacity:.45}
-  pre{margin:0;padding:16px 18px;min-height:300px;max-height:50vh;overflow:auto;white-space:pre-wrap;word-break:break-word;color:#bdf0d1;font-size:12px;line-height:1.7}
-  .hint{padding:14px 16px;border-top:1px solid var(--line);color:var(--dim);font-size:10px;line-height:1.9}
-  .hint b{color:var(--amber);font-weight:500}.hint code{color:#fff;background:#0e1721;padding:2px 5px}
-  .row{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 14px}
-  .row button{background:#0d1722;color:#bcd2e8;border-color:#26364c;padding:8px 10px;font-weight:500;letter-spacing:.04em;text-transform:none}
-  .row button:hover{border-color:var(--green);color:#fff}
-  .ok{color:var(--green)}.err{color:var(--red)}
-  a{color:var(--green)}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;min-height:100vh}
+  a{color:inherit;text-decoration:none}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--line);background:#fff}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.02em}
+  .logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#175cd3,#12b76a);display:grid;place-items:center;color:#fff;font-size:13px;font-weight:800}
+  .navlinks{display:flex;gap:24px;font-size:13px;color:var(--muted)}
+  .navlinks a:hover{color:var(--ink)}
+  .navcta{font-size:12px;font-weight:600;background:var(--ink);color:#fff;padding:9px 14px;border-radius:8px}
+  main{max-width:1080px;margin:0 auto;padding:64px 28px 80px}
+  .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid #abefc6;background:#ecfdf3;color:#067647;font-size:12px;font-weight:600;padding:7px 11px;border-radius:999px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px #12b76a1a}
+  h1{font-size:clamp(2.5rem,6vw,4.6rem);line-height:1.02;letter-spacing:-.055em;margin:24px 0 14px}
+  .lede{max-width:620px;color:var(--muted);font-size:16px;line-height:1.7;margin:0 0 38px}
+  .grid{display:grid;grid-template-columns:1.45fr .8fr;gap:20px}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px #1018280a;overflow:hidden}
+  .cardhead{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .cardhead h2{font-size:14px;margin:0;letter-spacing:-.01em}
+  .tag{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);padding:4px 7px;border-radius:6px}
+  form{display:flex;gap:8px;padding:16px 20px;border-bottom:1px solid var(--line)}
+  input{flex:1;min-width:0;border:1px solid #d0d5dd;border-radius:8px;padding:11px 12px;font:13px ui-monospace,Menlo,monospace;outline:none}
+  input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #175cd31a}
+  button{border:0;border-radius:8px;padding:11px 15px;font:600 12px inherit;cursor:pointer;background:var(--ink);color:#fff}
+  button:hover{filter:brightness(1.1)} button:disabled{opacity:.5;cursor:not-allowed}
+  pre{margin:0;padding:18px 20px;min-height:250px;max-height:42vh;overflow:auto;white-space:pre-wrap;word-break:break-word;background:#0b1220;color:#c7f9d9;font:12px/1.7 ui-monospace,Menlo,monospace}
+  .meta{display:flex;gap:16px;flex-wrap:wrap;padding:12px 20px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
+  .meta b{color:var(--ink);font-weight:600}
+  .red{padding:20px;background:linear-gradient(180deg,#fff,#fff7f6)}
+  .red h2{font-size:14px;margin:0 0 8px}
+  .red p{font-size:12px;line-height:1.7;color:var(--muted);margin:0 0 18px}
+  .hack{width:100%;background:var(--red);padding:14px;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+  .red .tiny{font-size:10px;color:#98a2b3;line-height:1.7;margin-top:12px}
+  .foot{max-width:1080px;margin:34px auto 0;padding:0 28px;color:#98a2b3;font-size:11px;line-height:1.8}
+  .overlay{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:28px;background:radial-gradient(circle at 50% 0,#3a0008 0,#080001 50%,#030000);color:#ffe9ea;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;overflow:auto}
+  .overlay[hidden]{display:none}
+  .overlay:before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,#ff00000d 0 1px,transparent 1px 4px)}
+  .oin{width:min(960px,100%);text-align:center;position:relative;animation:pop .45s ease-out both}
+  @keyframes pop{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .ob{color:#ff7777;font-size:12px;letter-spacing:.28em;text-transform:uppercase;margin-bottom:20px}
+  .overlay h1{font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;font-size:clamp(2.6rem,8vw,6.4rem);line-height:.9;letter-spacing:-.055em;color:#ff2222;text-shadow:0 0 45px #ff000055;margin:0 0 18px}
+  .oc{color:#ffb3b3;font-size:clamp(.8rem,2vw,1.05rem);letter-spacing:.14em}
+  .overlay pre{display:inline-block;text-align:left;margin:26px auto 0;min-height:0;max-height:34vh;border:1px solid #5b0710;background:#120003e6;color:#ffb3b3;font-size:11px;line-height:1.75;max-width:100%}
+  .or{display:inline-block;margin-top:24px;border:1px solid #ff4b4b;background:#ff2222;color:#100002;padding:12px 20px;border-radius:0;font:600 11px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+  .of{margin-top:18px;color:#a8656b;font-size:10px;line-height:1.8}
+  .glitch{animation:glitch .35s steps(2,end) 2}
+  @keyframes glitch{0%{transform:translate(0)}25%{transform:translate(-3px,1px)}50%{transform:translate(3px,-1px)}75%{transform:translate(-1px,2px)}100%{transform:none}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="top"><span>NETCHECK / REACHABILITY LAB</span><span>STATUS: <b>INTENTIONALLY VULNERABLE</b></span></div>
-  <h1>Shell <span>injection</span>.</h1>
-  <p class="sub">A tiny “DNS reachability” tool. It passes the hostname straight into a shell command. Normal input resolves a host; a semicolon turns the hostname into a command. The server is a real Vercel function, not a mock.</p>
-  <div class="badge">lab target · do not reuse this code</div>
+<header class="nav">
+  <div class="brand"><span class="logo">N</span>NORTHSTAR <span style="font-weight:400;color:#98a2b3">CLOUD</span></div>
+  <nav class="navlinks"><a href="#">Status</a><a href="#">Docs</a><a href="#">Pricing</a></nav>
+  <a class="navcta" href="#">Console</a>
+</header>
 
-  <section class="panel">
-    <div class="bar"><i></i><i></i><i></i><span style="margin-left:8px">netcheck@server — /bin/sh</span></div>
-    <form id="form">
-      <input id="host" value="example.com" autocomplete="off" spellcheck="false" aria-label="hostname">
-      <button id="run" type="submit">resolve</button>
-    </form>
-    <div class="row">
-      <button data-payload="example.com">normal: example.com</button>
-      <button data-payload="example.com; id">inject: ; id</button>
-      <button data-payload="example.com; id; cat /etc/passwd | head -5; uname -a">inject: passwd</button>
-      <button data-payload="example.com; echo PWNED; whoami">inject: echo</button>
-    </div>
-    <pre id="out">$ waiting for a query…</pre>
-    <div class="hint">
-      Try <code>example.com; id</code> — the semicolon ends the resolver command and starts a new one.
-      The output below is from the server process, not the browser.
-    </div>
-  </section>
+<main>
+  <div class="pill"><span class="dot"></span>All systems operational</div>
+  <h1>Infrastructure<br>you can trust.</h1>
+  <p class="lede">A status page for a fictional cloud provider. It also has a hostname checker with a very bad habit: it passes your input straight to the shell.</p>
+
+  <div class="grid">
+    <section class="card">
+      <div class="cardhead"><h2>Hostname checker</h2><span class="tag">us-east-1</span></div>
+      <form id="form">
+        <input id="host" value="example.com" autocomplete="off" spellcheck="false" aria-label="Hostname">
+        <button id="run" type="submit">Run check</button>
+      </form>
+      <pre id="out">$ waiting for a hostname…</pre>
+      <div class="meta"><span>server <b>Vercel function</b></span><span>shell <b>/bin/sh</b></span><span>auth <b>none</b></span></div>
+    </section>
+
+    <aside class="card red">
+      <div class="cardhead" style="padding:0 0 14px;border:0"><h2>Red team</h2><span class="tag">deliberately vulnerable</span></div>
+      <p>This is a lab. The checker does not quote the hostname before putting it in a shell command. One semicolon is enough.</p>
+      <button class="hack" id="hack">Hack this site</button>
+      <div class="tiny">Runs <code>id</code>, reads <code>/etc/passwd</code>, and shows the kernel. The page then flips to the compromised state.</div>
+    </aside>
+  </div>
+  <div class="foot">Northstar Cloud is fictional. The command injection is real. No production systems are involved.</div>
+</main>
+
+<div class="overlay" id="pwn" hidden>
+  <div class="oin">
+    <div class="ob">⚠ server compromised ⚠</div>
+    <h1>THIS SITE<br>HAS BEEN HACKED.</h1>
+    <div class="oc">NORTHSTAR CLOUD · SERVER-SIDE COMMAND EXECUTION</div>
+    <pre id="pwnout"></pre>
+    <br>
+    <button class="or" id="restore">Restore site</button>
+    <div class="of">Real shell injection in a lab app. No files were deleted. The command output is from the server, not the browser.</div>
+  </div>
 </div>
+
 <script>
   const $ = (s) => document.querySelector(s);
-  const out = $('#out');
-  async function run(host) {
+  const out = $('#out'), pwn = $('#pwn'), pwnout = $('#pwnout');
+
+  async function query(host) {
+    const r = await fetch('/api/ping?host=' + encodeURIComponent(host), {cache:'no-store'});
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || ('HTTP ' + r.status));
+    return d;
+  }
+
+  function show(d) {
+    out.textContent = '$ ' + d.host + '\n\n$ ' + d.command + '\n\n' + d.output + '\n[exit ' + (d.code ?? '?') + ' · ' + (d.ms ?? '?') + 'ms]';
+  }
+
+  async function normal(host) {
     $('#run').disabled = true;
-    out.textContent = '$ ' + host + '\n\nquerying…';
+    out.textContent = '$ ' + host + '\n\nchecking…';
+    try { show(await query(host)); }
+    catch (e) { out.textContent = 'error: ' + e.message; }
+    finally { $('#run').disabled = false; }
+  }
+
+  async function hack() {
+    $('#hack').disabled = true;
+    out.textContent = '$ example.com; id; cat /etc/passwd | head -5; uname -a\n\nbreaking out of the resolver…';
     try {
-      const r = await fetch('/api/ping?host=' + encodeURIComponent(host), {cache:'no-store'});
-      const d = await r.json();
-      out.textContent = '$ ' + host + '\n\n$ ' + (d.command || '') + '\n\n' + (d.output || '') + '\n[exit ' + (d.code ?? '?') + ' · ' + (d.ms ?? '?') + 'ms]';
+      const d = await query('example.com; id; cat /etc/passwd | head -5; uname -a');
+      show(d);
+      pwnout.textContent = d.output;
+      setTimeout(() => {
+        pwn.hidden = false;
+        document.body.classList.add('glitch');
+        setTimeout(() => document.body.classList.remove('glitch'), 900);
+      }, 500);
     } catch (e) {
       out.textContent = 'error: ' + e.message;
-      out.classList.add('err');
-    } finally {
-      $('#run').disabled = false;
-      $('#host').focus();
-    }
+    } finally { $('#hack').disabled = false; }
   }
-  $('#form').addEventListener('submit', (e) => { e.preventDefault(); run($('#host').value); });
-  document.querySelectorAll('[data-payload]').forEach(b => b.addEventListener('click', () => {
-    $('#host').value = b.dataset.payload;
-    run(b.dataset.payload);
-  }));
-  const q = new URLSearchParams(location.search).get('host');
-  if (q) { $('#host').value = q; run(q); }
+
+  $('#form').addEventListener('submit', (e) => { e.preventDefault(); normal($('#host').value); });
+  $('#hack').addEventListener('click', hack);
+  $('#restore').addEventListener('click', () => { pwn.hidden = true; out.textContent = '$ waiting for a hostname…'; });
+  const q = new URLSearchParams(location.search);
+  if (q.get('hack')) setTimeout(hack, 800);
 </script>
 </body>
 </html>
