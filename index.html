@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NETCHECK — shell injection lab</title>
+<style>
+  :root{--bg:#06080b;--panel:#0b1017;--line:#1d2a38;--text:#dbe8f4;--dim:#71839a;--green:#5cf2a4;--amber:#ffc857;--red:#ff5a5a}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% -20%,#10251d 0,#06080b 45%,#030406);color:var(--text);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;padding:28px}
+  .wrap{max-width:1000px;margin:0 auto}
+  .top{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:26px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);flex-wrap:wrap}
+  .top b{color:var(--amber);font-weight:500}
+  h1{font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;font-size:clamp(2rem,5vw,3.8rem);letter-spacing:-.05em;margin:0 0 12px;color:#fff}
+  h1 span{color:var(--green)}
+  .sub{max-width:720px;color:#9fb0c4;font-size:13px;line-height:1.8;margin:0 0 24px}
+  .badge{display:inline-block;border:1px solid #5b3f00;background:#1b1300;color:var(--amber);padding:5px 9px;font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:18px}
+  .panel{border:1px solid var(--line);background:linear-gradient(180deg,#0b1017f5,#070a0ff5);box-shadow:0 20px 70px #0009}
+  .bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);color:var(--dim);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+  .bar i{width:8px;height:8px;border-radius:50%;background:#2d3a4c}
+  .bar i:nth-child(1){background:#ff5f57}.bar i:nth-child(2){background:#febc2e}.bar i:nth-child(3){background:#28c840}
+  form{display:flex;gap:8px;padding:14px;border-bottom:1px solid var(--line)}
+  input{flex:1;min-width:0;background:#04070b;border:1px solid #26364c;color:#e8f4ff;padding:12px 13px;font:13px ui-monospace,Menlo,monospace;outline:none}
+  input:focus{border-color:var(--green);box-shadow:0 0 0 2px #5cf2a418}
+  button{background:var(--green);border:1px solid var(--green);color:#031008;padding:11px 16px;font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+  button:hover{filter:brightness(1.08)}button:disabled{opacity:.45}
+  pre{margin:0;padding:16px 18px;min-height:300px;max-height:50vh;overflow:auto;white-space:pre-wrap;word-break:break-word;color:#bdf0d1;font-size:12px;line-height:1.7}
+  .hint{padding:14px 16px;border-top:1px solid var(--line);color:var(--dim);font-size:10px;line-height:1.9}
+  .hint b{color:var(--amber);font-weight:500}.hint code{color:#fff;background:#0e1721;padding:2px 5px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 14px}
+  .row button{background:#0d1722;color:#bcd2e8;border-color:#26364c;padding:8px 10px;font-weight:500;letter-spacing:.04em;text-transform:none}
+  .row button:hover{border-color:var(--green);color:#fff}
+  .ok{color:var(--green)}.err{color:var(--red)}
+  a{color:var(--green)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><span>NETCHECK / REACHABILITY LAB</span><span>STATUS: <b>INTENTIONALLY VULNERABLE</b></span></div>
+  <h1>Shell <span>injection</span>.</h1>
+  <p class="sub">A tiny “DNS reachability” tool. It passes the hostname straight into a shell command. Normal input resolves a host; a semicolon turns the hostname into a command. The server is a real Vercel function, not a mock.</p>
+  <div class="badge">lab target · do not reuse this code</div>
+
+  <section class="panel">
+    <div class="bar"><i></i><i></i><i></i><span style="margin-left:8px">netcheck@server — /bin/sh</span></div>
+    <form id="form">
+      <input id="host" value="example.com" autocomplete="off" spellcheck="false" aria-label="hostname">
+      <button id="run" type="submit">resolve</button>
+    </form>
+    <div class="row">
+      <button data-payload="example.com">normal: example.com</button>
+      <button data-payload="example.com; id">inject: ; id</button>
+      <button data-payload="example.com; id; hostname; uname -a">inject: full</button>
+      <button data-payload="example.com; echo PWNED; whoami">inject: echo</button>
+    </div>
+    <pre id="out">$ waiting for a query…</pre>
+    <div class="hint">
+      Try <code>example.com; id</code> — the semicolon ends the resolver command and starts a new one.
+      The output below is from the server process, not the browser.
+    </div>
+  </section>
+</div>
+<script>
+  const $ = (s) => document.querySelector(s);
+  const out = $('#out');
+  async function run(host) {
+    $('#run').disabled = true;
+    out.textContent = '$ ' + host + '\n\nquerying…';
+    try {
+      const r = await fetch('/api/ping?host=' + encodeURIComponent(host), {cache:'no-store'});
+      const d = await r.json();
+      out.textContent = '$ ' + host + '\n\n$ ' + (d.command || '') + '\n\n' + (d.output || '') + '\n[exit ' + (d.code ?? '?') + ' · ' + (d.ms ?? '?') + 'ms]';
+    } catch (e) {
+      out.textContent = 'error: ' + e.message;
+      out.classList.add('err');
+    } finally {
+      $('#run').disabled = false;
+      $('#host').focus();
+    }
+  }
+  $('#form').addEventListener('submit', (e) => { e.preventDefault(); run($('#host').value); });
+  document.querySelectorAll('[data-payload]').forEach(b => b.addEventListener('click', () => {
+    $('#host').value = b.dataset.payload;
+    run(b.dataset.payload);
+  }));
+</script>
+</body>
+</html>
